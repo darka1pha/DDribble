@@ -25,14 +25,11 @@ const serverUrl = isProduction
 // My Config
 export { gql } from 'graphql-request'
 
-export const grafbase = new GraphQLClient(
-	process.env.GRAFBASE_API_URL as string,
-	{
-		headers: {
-			'x-api-key': process.env.GRAFBASE_API_KEY as string,
-		},
-	}
-)
+export const grafbase = new GraphQLClient(apiUrl, {
+	headers: {
+		'x-api-key': process.env.GRAFBASE_API_KEY as string,
+	},
+})
 
 export const createUser = (name: string, email: string, avatarUrl: string) => {
 	grafbase.setHeader('x-api-key', apiKey)
