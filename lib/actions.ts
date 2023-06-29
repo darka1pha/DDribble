@@ -12,18 +12,30 @@ const serverUrl = isProduction
 	? process.env.NEXT_PUBLIC_SERVER_URL
 	: 'http://localhost:3000'
 
-const client = new GraphQLClient(apiUrl)
+// const client = new GraphQLClient(apiUrl)
 
-const makeGraphQLRequest = async (query: string, variables = {}) => {
-	try {
-		return await client.request(query, variables)
-	} catch (err) {
-		throw err
+// const makeGraphQLRequest = async (query: string, variables = {}) => {
+// 	try {
+// 		return await client.request(query, variables)
+// 	} catch (err) {
+// 		throw err
+// 	}
+// }
+
+// My Config
+export { gql } from 'graphql-request'
+
+export const grafbase = new GraphQLClient(
+	process.env.GRAFBASE_API_URL as string,
+	{
+		headers: {
+			'x-api-key': process.env.GRAFBASE_API_KEY as string,
+		},
 	}
-}
+)
 
 export const createUser = (name: string, email: string, avatarUrl: string) => {
-	client.setHeader('x-api-key', apiKey)
+	grafbase.setHeader('x-api-key', apiKey)
 
 	const variables = {
 		input: {
@@ -33,10 +45,10 @@ export const createUser = (name: string, email: string, avatarUrl: string) => {
 		},
 	}
 
-	return makeGraphQLRequest(createUserMutation, variables)
+	return grafbase.request(createUserMutation, variables)
 }
 
 export const getUser = (email: string) => {
-	client.setHeader('x-api-key', apiKey)
-	return makeGraphQLRequest(getUserQuery, { email })
+	grafbase.setHeader('x-api-key', apiKey)
+	return grafbase.request(getUserQuery, { email })
 }
