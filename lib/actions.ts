@@ -2,8 +2,12 @@ import { ProjectForm } from '@/common.types'
 import {
 	createProjectMutation,
 	createUserMutation,
+	deleteProjectMutation,
+	getProjectById,
+	getProjectsOfUserQuery,
 	getUserQuery,
 	projectsQuery,
+	updateProjectMutation,
 } from '@/graphql'
 import { GraphQLClient } from 'graphql-request'
 
@@ -18,17 +22,6 @@ const serverUrl = isProduction
 	? process.env.NEXT_PUBLIC_SERVER_URL
 	: 'http://localhost:3000'
 
-// const client = new GraphQLClient(apiUrl)
-
-// const makeGraphQLRequest = async (query: string, variables = {}) => {
-// 	try {
-// 		return await client.request(query, variables)
-// 	} catch (err) {
-// 		throw err
-// 	}
-// }
-
-// My Config
 export { gql } from 'graphql-request'
 
 export const grafbase = new GraphQLClient(apiUrl, {
@@ -101,9 +94,56 @@ export const getUser = (email: string) => {
 }
 
 export const fetchAllProjects = async (
-	category?: string,
-	endcursor?: string
+	category?: string | null,
+	endcursor?: string | null
 ) => {
 	grafbase.setHeader('x-api-key', apiKey)
 	return grafbase.request(projectsQuery, { category, endcursor })
+}
+
+export const getProjectDetails = (id: string) => {
+	grafbase.setHeader('x-api-key', apiKey)
+	return grafbase.request(getProjectById, { id })
+}
+
+export const deleteProject = (id: string, token: string) => {
+	grafbase.setHeader('Authorization', `Bearer ${token}`)
+	return grafbase.request(deleteProjectMutation, { id })
+}
+
+export const getUserProjects = (id: string, last?: number) => {
+	grafbase.setHeader('x-api-key', apiKey)
+	return grafbase.request(getProjectsOfUserQuery, { id, last })
+}
+
+export const updateProject = async (
+	form: ProjectForm,
+	projectId: string,
+	token: string
+) => {
+	function isBase64DataURL(value: string) {
+		const base64Regex = /^data:image\/[a-z]+;base64,/
+		return base64Regex.test(value)
+	}
+
+	let updatedForm = { ...form }
+
+	const isUploadingNewImage = isBase64DataURL(form.image)
+
+	if (isUploadingNewImage) {
+		const imageUrl = await uploadImage(form.image)
+
+		if (imageUrl.url) {
+			updatedForm = { ...updatedForm, image: imageUrl.url }
+		}
+	}
+
+	grafbase.setHeader('Authorization', `Bearer ${token}`)
+
+	const variables = {
+		id: projectId,
+		input: updatedForm,
+	}
+
+	return grafbase.request(updateProjectMutation, variables)
 }

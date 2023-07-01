@@ -77,3 +77,69 @@ export const projectsQuery = gql`
 		}
 	}
 `
+
+export const getProjectById = gql`
+	query GetProjectById($id: ID!) {
+		project(by: { id: $id }) {
+			id
+			title
+			description
+			image
+			liveSiteUrl
+			githubUrl
+			category
+			createdBy {
+				id
+				name
+				email
+				avatarUrl
+			}
+		}
+	}
+`
+
+export const deleteProjectMutation = gql`
+	mutation DeleteProject($id: ID!) {
+		projectDelete(by: { id: $id }) {
+			deletedId
+		}
+	}
+`
+export const getProjectsOfUserQuery = gql`
+	query getUserProjects($id: ID!, $last: Int = 4) {
+		user(by: { id: $id }) {
+			id
+			name
+			email
+			description
+			avatarUrl
+			githubUrl
+			linkedinUrl
+			projects(last: $last) {
+				edges {
+					node {
+						id
+						title
+						image
+					}
+				}
+			}
+		}
+	}
+`
+
+export const updateProjectMutation = gql`
+	mutation UpdateProject($id: ID!, $input: ProjectUpdateInput!) {
+		projectUpdate(by: { id: $id }, input: $input) {
+			project {
+				id
+				title
+				description
+				createdBy {
+					email
+					name
+				}
+			}
+		}
+	}
+`;
