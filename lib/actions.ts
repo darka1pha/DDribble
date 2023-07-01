@@ -3,6 +3,7 @@ import {
 	createProjectMutation,
 	createUserMutation,
 	getUserQuery,
+	projectsQuery,
 } from '@/graphql'
 import { GraphQLClient } from 'graphql-request'
 
@@ -80,6 +81,7 @@ export const createNewProject = async (
 
 	if (imageUrl.url) {
 		grafbase.setHeader('Authorization', `Bearer ${token}`)
+
 		const variables = {
 			input: {
 				...form,
@@ -96,4 +98,12 @@ export const createNewProject = async (
 export const getUser = (email: string) => {
 	grafbase.setHeader('x-api-key', apiKey)
 	return grafbase.request(getUserQuery, { email })
+}
+
+export const fetchAllProjects = async (
+	category?: string,
+	endcursor?: string
+) => {
+	grafbase.setHeader('x-api-key', apiKey)
+	return grafbase.request(projectsQuery, { category, endcursor })
 }

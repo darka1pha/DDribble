@@ -30,8 +30,8 @@ export const createUserMutation = gql`
 	}
 `
 export const createProjectMutation = gql`
-	mutation UpdateProject($id: ID!, $input: ProjectUpdateInput!) {
-		projectUpdate(by: { id: $id }, input: $input) {
+	mutation CreateProject($input: ProjectCreateInput!) {
+		projectCreate(input: $input) {
 			project {
 				id
 				title
@@ -39,6 +39,39 @@ export const createProjectMutation = gql`
 				createdBy {
 					email
 					name
+				}
+			}
+		}
+	}
+`
+export const projectsQuery = gql`
+	query getProjects($category: String, $endCursor: String) {
+		projectSearch(
+			first: 8
+			after: $endCursor
+			filter: { category: { eq: $category } }
+		) {
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
+			edges {
+				node {
+					title
+					githubUrl
+					description
+					liveSiteUrl
+					id
+					image
+					category
+					createdBy {
+						id
+						email
+						name
+						avatarUrl
+					}
 				}
 			}
 		}
