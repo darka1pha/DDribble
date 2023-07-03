@@ -2,7 +2,7 @@ import { Footer, Navbar } from '@/components'
 import './globals.css'
 
 export const metadata = {
-	title: 'DDribbble',
+	title: 'DDribble',
 	description: 'Showcase and discover developer projects',
 }
 
