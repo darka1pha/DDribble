@@ -14,6 +14,8 @@ interface Props {
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
 export const revalidate = 0
+export const runtime = 'edge'
+export const cache = 'no-storage'
 
 interface ProjectSearch {
 	projectSearch: {
