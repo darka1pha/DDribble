@@ -9,6 +9,7 @@ import {
 	projectsQuery,
 	updateProjectMutation,
 } from '@/graphql'
+
 import { GraphQLClient } from 'graphql-request'
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -24,11 +25,15 @@ const serverUrl = isProduction
 
 export { gql } from 'graphql-request'
 
-export const grafbase = new GraphQLClient(apiUrl, {
-	headers: {
-		'x-api-key': process.env.GRAFBASE_API_KEY as string,
-	},
-})
+export const grafbase = new GraphQLClient(apiUrl)
+
+const makeGraphQLRequest = async (query: string, variables = {}) => {
+	try {
+		return await grafbase.request(query, variables)
+	} catch (err) {
+		throw err
+	}
+}
 
 export const createUser = (name: string, email: string, avatarUrl: string) => {
 	grafbase.setHeader('x-api-key', apiKey)
@@ -41,7 +46,7 @@ export const createUser = (name: string, email: string, avatarUrl: string) => {
 		},
 	}
 
-	return grafbase.request(createUserMutation, variables)
+	return makeGraphQLRequest(createUserMutation, variables)
 }
 
 export const fetchToken = async () => {
@@ -74,7 +79,6 @@ export const createNewProject = async (
 
 	if (imageUrl.url) {
 		grafbase.setHeader('Authorization', `Bearer ${token}`)
-
 		const variables = {
 			input: {
 				...form,
@@ -84,13 +88,13 @@ export const createNewProject = async (
 				},
 			},
 		}
-		return grafbase.request(createProjectMutation, variables)
+		return makeGraphQLRequest(createProjectMutation, variables)
 	}
 }
 
 export const getUser = (email: string) => {
 	grafbase.setHeader('x-api-key', apiKey)
-	return grafbase.request(getUserQuery, { email })
+	return makeGraphQLRequest(getUserQuery, { email })
 }
 
 export const fetchAllProjects = async (
@@ -98,22 +102,22 @@ export const fetchAllProjects = async (
 	endcursor?: string | null
 ) => {
 	grafbase.setHeader('x-api-key', apiKey)
-	return grafbase.request(projectsQuery, { category, endcursor })
+	return makeGraphQLRequest(projectsQuery, { category, endcursor })
 }
 
 export const getProjectDetails = (id: string) => {
 	grafbase.setHeader('x-api-key', apiKey)
-	return grafbase.request(getProjectById, { id })
+	return makeGraphQLRequest(getProjectById, { id })
 }
 
 export const deleteProject = (id: string, token: string) => {
 	grafbase.setHeader('Authorization', `Bearer ${token}`)
-	return grafbase.request(deleteProjectMutation, { id })
+	return makeGraphQLRequest(deleteProjectMutation, { id })
 }
 
 export const getUserProjects = (id: string, last?: number) => {
 	grafbase.setHeader('x-api-key', apiKey)
-	return grafbase.request(getProjectsOfUserQuery, { id, last })
+	return makeGraphQLRequest(getProjectsOfUserQuery, { id, last })
 }
 
 export const updateProject = async (
@@ -145,5 +149,5 @@ export const updateProject = async (
 		input: updatedForm,
 	}
 
-	return grafbase.request(updateProjectMutation, variables)
+	return makeGraphQLRequest(updateProjectMutation, variables)
 }

@@ -142,4 +142,4 @@ export const updateProjectMutation = gql`
 			}
 		}
 	}
-`;
+`
