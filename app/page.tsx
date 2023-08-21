@@ -30,7 +30,10 @@ interface ProjectSearch {
 }
 
 const Home = async ({ searchParams: { category, endcursor } }: Props) => {
-	const data = (await fetchAllProjects(category, endcursor)) as ProjectSearch
+	const data = (await fetchAllProjects(
+		category ?? '',
+		endcursor
+	)) as ProjectSearch
 	const projectsToDispaly = data?.projectSearch?.edges || []
 
 	if (projectsToDispaly.length === 0) {

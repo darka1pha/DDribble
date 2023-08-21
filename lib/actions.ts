@@ -98,7 +98,7 @@ export const getUser = (email: string) => {
 }
 
 export const fetchAllProjects = async (
-	category = '',
+	category?: string | null,
 	endcursor?: string | null
 ) => {
 	grafbase.setHeader('x-api-key', apiKey)
