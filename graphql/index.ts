@@ -44,13 +44,13 @@ export const createProjectMutation = gql`
 		}
 	}
 `
-// filter: { category: { eq: $category } }
+
 export const projectsQuery = gql`
 	query getProjects($category: String, $endCursor: String) {
 		projectSearch(
 			first: 8
 			after: $endCursor
-			filter: { category: { contains: $category } }
+			filter: { category: { eq: $category } }
 		) {
 			pageInfo {
 				hasNextPage
