@@ -46,7 +46,11 @@ export const createProjectMutation = gql`
 `
 
 export const projectsQuery = gql`
-	query getProjects($category: String, $endCursor: String) {
+	query getProjects(
+		$category: String!
+		$endCursor: String
+		$categoryExists: Boolean!
+	) {
 		projectSearch(
 			first: 8
 			after: $endCursor
@@ -66,7 +70,7 @@ export const projectsQuery = gql`
 					liveSiteUrl
 					id
 					image
-					category
+					category @skip(if: $categoryExists)
 					createdBy {
 						id
 						email

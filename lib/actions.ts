@@ -98,11 +98,15 @@ export const getUser = (email: string) => {
 }
 
 export const fetchAllProjects = async (
-	category='',
+	category = '',
 	endcursor?: string | null
 ) => {
 	grafbase.setHeader('x-api-key', apiKey)
-	return makeGraphQLRequest(projectsQuery, { category, endcursor })
+	return makeGraphQLRequest(projectsQuery, {
+		category,
+		endcursor,
+		categoryExists: !!category,
+	})
 }
 
 export const getProjectDetails = (id: string) => {
